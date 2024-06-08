@@ -12,8 +12,6 @@ public class Pen extends Figure {
     public Pen(Point pointer) {
         x = (int) pointer.getX();
         y = (int) pointer.getY();
-        updatedX = (int) pointer.getX();
-        updatedY = (int) pointer.getY();
     }
 
     @Override
