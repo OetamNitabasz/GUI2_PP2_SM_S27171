@@ -3,10 +3,7 @@ package SimpleDraw;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 
 enum Status {
     New,
@@ -14,10 +11,10 @@ enum Status {
     Saved
 }
 
-public class Window extends JFrame implements ActionListener, KeyListener {
-    MenuBar menuBar = new MenuBar(this);
+public class Window extends JFrame implements ActionListener {
     StatusBar statusBar = new StatusBar();
-    Canvas canvas = new Canvas(statusBar);
+    Canvas canvas = new Canvas();
+    MenuBar menuBar = new MenuBar(this);
 
     public Window() {
         super("Simple Draw");
@@ -28,7 +25,6 @@ public class Window extends JFrame implements ActionListener, KeyListener {
         this.add(canvas, BorderLayout.CENTER);
         this.add(statusBar, BorderLayout.SOUTH);
         statusBar.setState(Status.New);
-        addKeyListener(this);
     }
 
     @Override
@@ -40,29 +36,15 @@ public class Window extends JFrame implements ActionListener, KeyListener {
             dialog.addChoosableFileFilter(sge);
             dialog.setFileFilter(sge);
             dialog.showOpenDialog(this);
-        } else if (src == menuBar.circle || src == menuBar.square || src == menuBar.pen) {
+        } else if (src == menuBar.circle) {
             statusBar.setMode(e.getActionCommand());
+            canvas.setDrawingMode(DrawingMode.Circle);
+        } else if(src == menuBar.square) {
+            statusBar.setMode(e.getActionCommand());
+            canvas.setDrawingMode(DrawingMode.Square);
+        } else if(src == menuBar.pen) {
+            statusBar.setMode(e.getActionCommand());
+            canvas.setDrawingMode(DrawingMode.Pen);
         }
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_F1) {
-            if(menuBar.circle.isSelected()) {
-                canvas.drawCircle();
-            } else if(menuBar.square.isSelected()) {
-                canvas.drawRect();
-            }
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-
     }
 }

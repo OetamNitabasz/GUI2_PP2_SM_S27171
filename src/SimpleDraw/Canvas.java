@@ -4,22 +4,24 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Canvas extends JPanel implements MouseListener, MouseMotionListener {
+
+public class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
     Point pointer;
     Pen pen;
     List<Figure> figures = new ArrayList<>();
+    DrawingMode mode;
 
 
-    public Canvas(StatusBar statusBar) {
+    public Canvas() {
         setBackground(Color.magenta);
+        setFocusable(true);
         addMouseListener(this);
         addMouseMotionListener(this);
+        addKeyListener(this);
     }
 
     @Override
@@ -29,17 +31,14 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
     @Override
     public void mousePressed(MouseEvent e) {
-       /* var modifier = e.getModifiersEx();
-        if((modifier & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
-            statusBar.mouseCoords(e.getX(), e.getY());
-        }*/
-
+        if(mode == DrawingMode.Pen) {
         var modifier = e.getModifiersEx();
         if((modifier & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
             pointer = e.getPoint();
             pen = new Pen(pointer);
             figures.add(pen);
-    }
+        }
+        }
     }
 
     @Override
@@ -57,26 +56,24 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         pointer = null;
     }
 
-    public void drawCircle() {
+    private void drawCircle() {
         if(pointer == null)
             return;
         figures.add(new Circle(pointer));
         repaint();
     }
 
-    public void drawRect() {
+    private void drawSquare() {
         if(pointer == null)
             return;
         figures.add(new Square(pointer));
         repaint();
     }
 
-    public void drawPen() {
-        if(pointer == null)
-            return;
-        figures.add(new Pen(pointer));
-        repaint();
+    public void setDrawingMode(DrawingMode mode) {
+        this.mode = mode;
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -92,10 +89,33 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             pen.update(e.getPoint());
             repaint();
         }
+        pointer = e.getPoint();
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        pointer = e.getPoint();
+       pointer = e.getPoint();
+    }
+
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_F1) {
+            if(mode == DrawingMode.Square) {
+                drawSquare();
+            } else if(mode == DrawingMode.Circle) {
+                drawCircle();
+            }
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

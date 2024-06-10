@@ -1,26 +1,34 @@
 package SimpleDraw;
 
-import javax.swing.event.MouseInputListener;
+
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Pen extends Figure {
-    int x, y, updatedX, updatedY;
+    List<Point> points = new ArrayList<>();
+
 
     public Pen(Point pointer) {
-        x = (int) pointer.getX();
-        y = (int) pointer.getY();
+        points.add(pointer);
     }
 
     @Override
     public void draw(Graphics g) {
         g.setColor(color);
-        g.drawLine(x,y, updatedX, updatedY);
+        //points.stream().forEach(p -> g.drawOval(p.x, p.y, 2, 2));
+        //int[] x;
+        var x = points.stream().mapToInt(p -> p.x).toArray();
+        var y = points.stream().mapToInt(p -> p.y).toArray();
+        var g2 = (Graphics2D) g;
+        var s = g2.getStroke();
+        g2.setStroke(new BasicStroke(2));
+        g.drawPolyline(x,y, points.size());
+        g2.setStroke(s);
+
     }
+    // poprawic
     public void update(Point pointer) {
-        updatedX = (int) pointer.getX();
-        updatedY = (int) pointer.getY();
+        points.add(pointer);
     }
 }
