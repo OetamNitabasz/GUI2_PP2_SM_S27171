@@ -9,7 +9,9 @@ import java.awt.event.KeyEvent;
 public class MenuBar extends JMenuBar  {
 
     final JMenuItem open;
-
+    final JMenuItem save;
+    final JMenuItem saveAs;
+    final JMenuItem quit;
 
     final JMenuItem color;
     final JMenuItem clear;
@@ -23,16 +25,27 @@ public class MenuBar extends JMenuBar  {
         file.setMnemonic(KeyEvent.VK_F);
 
         open = new JMenuItem("Open");
-        JMenuItem save = new JMenuItem("Save");
-        JMenuItem saveAs = new JMenuItem("Save As");
-        JMenuItem quit = new JMenuItem("Quit");
+        save = new JMenuItem("Save");
+        saveAs = new JMenuItem("Save As");
+        quit = new JMenuItem("Quit");
 
         open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         open.setMnemonic(KeyEvent.VK_O);
         open.addActionListener(obslugaMenu);
-        /*save.setAccelerator(KeyStroke.getKeyStroke("Ctrl-S"));
-        saveAs.setAccelerator(KeyStroke.getKeyStroke("Ctrl+Shift-S"));
-        quit.setAccelerator(KeyStroke.getKeyStroke("Ctrl-Q"));*/
+
+        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+        save.setMnemonic(KeyEvent.VK_S);
+        save.addActionListener(obslugaMenu);
+
+
+        saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+        saveAs.setMnemonic(KeyEvent.VK_A);
+        saveAs.addActionListener(obslugaMenu);
+
+
+        quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
+        quit.setMnemonic(KeyEvent.VK_Q);
+        quit.addActionListener(obslugaMenu);
 
         file.add(open);
         file.add(save);

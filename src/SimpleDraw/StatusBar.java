@@ -4,7 +4,11 @@ import javax.swing.*;
 
 import java.awt.*;
 
-public class StatusBar extends JToolBar {
+interface StatusListener {
+    void setState(Status status);
+}
+
+public class StatusBar extends JToolBar implements StatusListener {
     JLabel label1 = new JLabel();
     JLabel label2 = new JLabel();
 

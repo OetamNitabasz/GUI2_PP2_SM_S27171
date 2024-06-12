@@ -3,28 +3,34 @@ package SimpleDraw;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
-    Point pointer;
-    Pen pen;
-    List<Figure> figures = new ArrayList<>();
-    DrawingMode mode;
-    Color color = Color.GREEN;
-    boolean pressedD = false;
+    private Point pointer;
+    private Pen pen;
+    private final ArrayList<Figure> figures = new ArrayList<>();
+    private DrawingMode mode;
+    private Color color = Color.GREEN;
+    private boolean pressedD = false;
+    private boolean modified = false;
+    private File file = null;
+    private final StatusListener statusListener;
 
-    public Canvas() {
+     Canvas(StatusListener statusListener) {
         setFocusable(true);
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
-    }
-
-    public void clear() {
-        figures.clear();
-        repaint();
+        this.statusListener = statusListener;
+        statusListener.setState(Status.New);
     }
 
     public Color getPickedColor() {
@@ -67,16 +73,14 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
                 pressedD = false;       // confirmationDialog przejmuje Focus przez co canvas nie dostnie informacji o puszczonym klawiszu, musimy recznie przelaczyc pressedD
                 var result = JOptionPane.showConfirmDialog(this, "Delete figure?", "Warning", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
-                    deleted.forEach(s -> figures.remove(s));
-                    repaint();
+                    removeFigures(deleted);
                 }
             }
         } else if (mode == DrawingMode.Pen) {
             var modifier = e.getModifiersEx();
             if ((modifier & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
                 pointer = e.getPoint();
-                pen = new Pen(pointer, color);
-                figures.add(pen);
+                drawPen();
             }
         }
     }
@@ -102,6 +106,13 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             return;
         figures.add(new Circle(pointer));
         repaint();
+        setModified();
+    }
+
+    private void drawPen() {
+        pen = new Pen(pointer, color);
+        figures.add(pen);
+        setModified();
     }
 
     private void drawSquare() {
@@ -109,6 +120,19 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             return;
         figures.add(new Square(pointer));
         repaint();
+        setModified();
+    }
+
+    public void clear() {
+        figures.clear();
+        setModified();
+        repaint();
+    }
+
+    private void removeFigures( List<Figure> deleted) {
+        deleted.forEach(figures::remove);
+        repaint();
+        setModified();
     }
 
     public void setDrawingMode(DrawingMode mode) {
@@ -162,5 +186,61 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
         if(e.getKeyCode() == KeyEvent.VK_D) {
             pressedD = false;
         }
+    }
+
+    public void save() {
+        saveAs(file);
+    }
+
+    public boolean isModified() {
+        return modified;
+    }
+
+    private void setModified() {
+        modified = true;
+        if(!isNew())
+            statusListener.setState(Status.Modified);
+    }
+
+    private void setSave(File file) {
+        this.file = file;
+        modified = false;
+        statusListener.setState(Status.Saved);
+    }
+
+    public void saveAs(File selectedFile) {
+        var dst = selectedFile.toPath();
+        var data = figures.stream().map(Object::toString).toList();
+        try {
+            Files.write(dst, data, StandardOpenOption.CREATE);
+            setSave(selectedFile);
+        }catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Cannot save file. ", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void load(File selectedFile) {
+        try {
+            Scanner scr = new Scanner(selectedFile);
+            figures.clear();
+            while (scr.hasNextLine()) {
+                var line = scr.nextLine();
+                if (line.startsWith("Circle,")) {
+                    figures.add(new Circle(line));
+                } else if (line.startsWith("Square,")) {
+                    figures.add(new Square(line));
+                } else if(line.startsWith("Pen,")) {
+                    figures.add(new Pen(line));
+                }
+            }
+            setSave(selectedFile);
+            repaint();
+        }catch(FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Cannot load file. " , "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public boolean isNew() {
+        return file == null;
     }
 }

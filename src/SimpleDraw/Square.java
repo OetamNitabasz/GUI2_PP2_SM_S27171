@@ -11,6 +11,15 @@ public class Square extends Figure{
         y = pointer.y - w / 2;
         color = colorGenerator();
     }
+
+    public Square(String text) {
+        var elements = text.split(",");
+        color = new Color(Integer.parseInt(elements[1]));
+        x = Integer.parseInt(elements[2]);
+        y = Integer.parseInt(elements[3]);
+        w = Integer.parseInt(elements[4]);
+    }
+
     @Override
     public boolean contains(Point pointer) {
         return (pointer.x >= x && pointer.x <= x + w && pointer.y >= y && pointer.y <= y + w);
@@ -20,5 +29,13 @@ public class Square extends Figure{
     public void draw(Graphics g) {
         g.setColor(color);
         g.fillRect(x, y, w, w);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Square,");
+        sb.append(color.getRGB()).append(",");
+        sb.append(x).append(",").append(y).append(",").append(w);
+        return sb.toString();
     }
 }
