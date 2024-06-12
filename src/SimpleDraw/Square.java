@@ -9,6 +9,13 @@ public class Square extends Figure{
         w = 20;
         x = pointer.x - w / 2;
         y = pointer.y - w / 2;
+        color = colorGenerator();
+    }
+    @Override
+    public boolean contains(Point pointer) {
+        if(pointer.x >= x && pointer.x <= x + w && pointer.y >= y && pointer.y <= y + w)
+            return true;
+        return false;
     }
 
     @Override

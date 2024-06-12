@@ -8,9 +8,9 @@ import java.util.List;
 public class Pen extends Figure {
     List<Point> points = new ArrayList<>();
 
-
-    public Pen(Point pointer) {
+    public Pen(Point pointer, Color color) {
         points.add(pointer);
+        this.color = color;
     }
 
     @Override

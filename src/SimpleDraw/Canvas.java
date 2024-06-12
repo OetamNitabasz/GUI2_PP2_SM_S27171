@@ -1,9 +1,7 @@
 package SimpleDraw;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +12,31 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     Pen pen;
     List<Figure> figures = new ArrayList<>();
     DrawingMode mode;
-
+    Color color = Color.GREEN;
+    boolean pressedD = false;
 
     public Canvas() {
-        setBackground(Color.magenta);
         setFocusable(true);
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
     }
+
+    public void clear() {
+        figures.clear();
+        repaint();
+    }
+
+    public Color getPickedColor() {
+        return color;
+    }
+
+    public void setPickedColor(Color color) {
+        if(color != null) {
+            this.color = color;
+        }
+    }
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -31,19 +45,46 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(mode == DrawingMode.Pen) {
-        var modifier = e.getModifiersEx();
-        if((modifier & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
-            pointer = e.getPoint();
-            pen = new Pen(pointer);
-            figures.add(pen);
-        }
+        if(pressedD){
+           /* Figure clicked = null;
+            for(int i = figures.size() - 1; i >= 0 ; i--) {
+               var f = figures.get(i);
+               if(f.contains(e.getPoint())) {
+                   clicked = f;
+                   break;
+               }
+            }
+           if(clicked != null) {
+               pressedD = false;       // confirmationDialog przejmuje Focus przez co canvas nie dostnie informacji o puszczonym klawiszu, musimy recznie przelaczyc pressedD
+               var result = JOptionPane.showConfirmDialog(this, "Delete figure?", "Warning", JOptionPane.YES_NO_OPTION);
+               if(result == JOptionPane.YES_OPTION) {
+                    figures.remove(clicked);
+                    repaint();
+               }
+           }*/
+            List<Figure> deleted = figures.stream().filter(s -> s.contains(e.getPoint())).toList();
+            if(!deleted.isEmpty()) {
+                pressedD = false;       // confirmationDialog przejmuje Focus przez co canvas nie dostnie informacji o puszczonym klawiszu, musimy recznie przelaczyc pressedD
+                var result = JOptionPane.showConfirmDialog(this, "Delete figure?", "Warning", JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.YES_OPTION) {
+                    deleted.forEach(s -> figures.remove(s));
+                    repaint();
+                }
+            }
+        } else if (mode == DrawingMode.Pen) {
+            var modifier = e.getModifiersEx();
+            if ((modifier & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+                pointer = e.getPoint();
+                pen = new Pen(pointer, color);
+                figures.add(pen);
+            }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         pen = null;
+
     }
 
     @Override
@@ -111,11 +152,15 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
             } else if(mode == DrawingMode.Circle) {
                 drawCircle();
             }
+        } else if(e.getKeyCode() == KeyEvent.VK_D) {
+            pressedD = true;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        if(e.getKeyCode() == KeyEvent.VK_D) {
+            pressedD = false;
+        }
     }
 }

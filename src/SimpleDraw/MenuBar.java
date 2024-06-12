@@ -5,20 +5,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+
 public class MenuBar extends JMenuBar  {
 
     final JMenuItem open;
 
 
-    private final JMenuItem color;
-    private final JMenuItem clear;
+    final JMenuItem color;
+    final JMenuItem clear;
     final JRadioButtonMenuItem circle;
     final JRadioButtonMenuItem square;
     final JRadioButtonMenuItem pen;
 
     public MenuBar(ActionListener obslugaMenu) {
-
-
 
         JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
@@ -75,16 +74,17 @@ public class MenuBar extends JMenuBar  {
         color = new JMenuItem("Color");
         color.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
         color.setMnemonic(KeyEvent.VK_C);
+        color.addActionListener(obslugaMenu);
         draw.add(color);
         draw.addSeparator();
 
         clear = new JMenuItem("Clear");
         clear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
         clear.setMnemonic(KeyEvent.VK_L);
+        clear.addActionListener(obslugaMenu);
         draw.add(clear);
 
 
         this.add(draw);
     }
-
 }

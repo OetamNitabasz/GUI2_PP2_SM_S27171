@@ -9,6 +9,19 @@ public class Circle extends Figure {
         r = 10;
         x = pointer.x - r;
         y = pointer.y - r;
+        color = colorGenerator();
+    }
+    @Override
+    public boolean contains(Point pointer) {
+        var xC = x + r;
+        var yC = y + r;
+
+        var dX = Math.abs(xC - pointer.x);
+        var dY = Math.abs(yC - pointer.y);
+
+        var d = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2));
+
+        return d <= r;
     }
 
     @Override
