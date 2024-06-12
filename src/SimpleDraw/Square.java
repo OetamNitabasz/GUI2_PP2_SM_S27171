@@ -13,9 +13,7 @@ public class Square extends Figure{
     }
     @Override
     public boolean contains(Point pointer) {
-        if(pointer.x >= x && pointer.x <= x + w && pointer.y >= y && pointer.y <= y + w)
-            return true;
-        return false;
+        return (pointer.x >= x && pointer.x <= x + w && pointer.y >= y && pointer.y <= y + w);
     }
 
     @Override
